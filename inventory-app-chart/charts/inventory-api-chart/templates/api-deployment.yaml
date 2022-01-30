@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-api-deployment
+  labels:
+    app: inventory-api
+spec:
+  selector:
+    matchLabels:
+      app: inventory-api
+  template:
+    metadata:
+      labels:
+        app: inventory-api
+    spec:
+      containers:
+        - name: inventory-api-container
+          image: docker.io/macsi21/inventory-api:v5
+          ports:
+            -  containerPort: 80
+          envFrom: # Defines all ConfigMap's and Secret's data as container environment variables
+            - configMapRef: 
+                name: postgres-config
+            - secretRef:
+                name: postgres-secret
+      restartPolicy: Always

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: inventory_pg
+  POSTGRES_USER: postgresadmin
+  POSTGRES_PORT: "30001"
+  POSTGRES_HOST: "localhost"
+  # POSTGRES_HOST: "10.0.2.15"

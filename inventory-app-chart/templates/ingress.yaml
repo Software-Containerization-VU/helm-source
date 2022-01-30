@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: inventory-ingress
+spec:
+  tls:
+    - hosts:
+      - www.lkrum.com
+      - api.lkrum.com
+      secretName: cloudflare-tls
+  rules:
+    - host: www.lkrum.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-ui-clusterip
+                port:
+                  number: 3000
+    - host: api.lkrum.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-api-clusterip
+                port:
+                  number: 8090
