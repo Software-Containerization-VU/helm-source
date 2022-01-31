@@ -15,7 +15,6 @@ spec:
     spec:
       containers:
         - name: inventory-ui-container
-          image: docker.io/macsi21/inventory-ui:v1
+          image: localhost:32000/inventory-test-ui:v1
           ports:
             - containerPort: 80
-      restartPolicy: Always
