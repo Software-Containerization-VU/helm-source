@@ -42,23 +42,17 @@ service:
  
 ingress:
   enabled: true
+  staticIP: "ingress-inventory"
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: www.lkrum.com
-      paths: 
-        - /
-    - host: api.lkrum.com
-      paths:
-        - /
   tls:
    - secretName: cloudflare-tls
      hosts:
-       - www.lkrum.com
-       - api.lkrum.com
+       - www.lkrum.dev
+       - api.lkrum.dev
   rules:
-    - host: www.lkrum.com
+    - host: www.lkrum.dev
       http:
         paths:
           - path: /
@@ -68,7 +62,7 @@ ingress:
                 name: inventory-ui-clusterip
                 port:
                   number: 3000
-    - host: api.lkrum.com
+    - host: api.lkrum.dev
       http:
         paths:
           - path: /
@@ -80,9 +74,9 @@ ingress:
                   number: 8090
 
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
+  # We usually redevmend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # resources, such as Minikube. If you do want to specify resources, undevment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
   #   cpu: 100m
