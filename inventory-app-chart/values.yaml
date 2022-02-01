@@ -57,6 +57,27 @@ ingress:
      hosts:
        - www.lkrum.com
        - api.lkrum.com
+  rules:
+    - host: www.lkrum.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-ui-clusterip
+                port:
+                  number: 3000
+    - host: api.lkrum.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-api-clusterip
+                port:
+                  number: 8090
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
