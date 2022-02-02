@@ -16,6 +16,12 @@ spec:
       containers:
         - name: inventory-api-container
           image: docker.io/macsi21/inventory-api:v1
+          readinessProbe:
+            httpGet:
+              path: "/hc"
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
           ports:
             -  containerPort: 80
           env:
