@@ -36,16 +36,48 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+deployment:
+  UI:
+    imageVersion: v2
+    labels:
+      app: inventory-ui
+
+    selector:
+      matchLabels:
+        app: inventory-ui
+
+    template:
+      labels:
+        app: inventory-ui
+    containers:
+      - name: inventory-ui-container
+        image: docker.io/macsi21/inventory-ui
+        ports:
+          - containerPort: 80
+
 service:
-  type: ClusterIP
-  port: 80
- 
+  UI:
+    type: ClusterIP
+    labels:
+      app: inventory-ui
+    ports: 
+    - port: 3000
+      targetPort: 80 
+    selector: 
+      app: inventory-ui
+
+hpa:
+  UI:
+    kind: Deployment
+    minReplicas: 3
+    maxReplicas: 10
+    metric:
+      targetCPUUtilizationPercentage: 65
+
 ingress:
   enabled: true
-  staticIP: "ingress-inventory"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: ingress-inventory
   tls:
    - secretName: cloudflare-tls
      hosts:

@@ -1,20 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inventory-ui-deployment
+  name: {{ .Release.Name }}-ui-deployment
+  {{- with .Values.deployment.UI }}
   labels:
-    app: inventory-ui
+    {{- range $key,$value := .labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
-      app: inventory-ui
+      {{- range $key,$value := .selector.matchLabels }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
   template:
     metadata:
       labels:
-        app: inventory-ui
+        {{- range $key,$value := .template.labels }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
     spec:
       containers:
-        - name: inventory-ui-container
-          image: docker.io/macsi21/inventory-ui:v2
+        {{- $imageVersion := .imageVersion }}
+        {{- range .containers }}
+        - name: {{ .name }}
+          image: {{ .image }}:{{ $imageVersion }}
           ports:
-            - containerPort: 80
+            {{- range .ports }}
+            - containerPort: {{ .containerPort }}
+            {{- end }}
+        {{- end }}
+  {{- end }}

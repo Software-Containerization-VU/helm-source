@@ -1,12 +1,16 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: inventory-ui-hpa
+  name: {{ .Release.Name }}-ui-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: inventory-ui-deployment
-  minReplicas: 3
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 65
+  {{- with .Values.hpa.UI }}
+    kind: {{ .kind }}
+    name: {{ $.Release.Name }}-ui-deployment
+  minReplicas: {{ .minReplicas }}
+  maxReplicas: {{ .maxReplicas }}
+  {{- range $key,$value := .metric }}
+  {{ $key }}: {{ $value }}
+  {{- end }}
+  {{- end }}

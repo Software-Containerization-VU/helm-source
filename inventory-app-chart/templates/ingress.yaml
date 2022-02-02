@@ -3,11 +3,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress
+  {{- with .Values.ingress }}
   annotations:     
-    kubernetes.io/ingress.global-static-ip-name:  "ingress-inventory"
+    {{- range $key,$value := .annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
   tls:
-    {{- with .Values.ingress }}
     {{- range .tls }}
     - hosts:
       {{- range .hosts }}
