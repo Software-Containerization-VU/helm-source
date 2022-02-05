@@ -21,10 +21,21 @@ spec:
         {{- end }}
     spec:
       containers:
+<<<<<<< HEAD
         {{- $imageVersion := .imageVersion }}
         {{- range .containers }}
         - name: {{ .name }}
           image: {{ .image }}: {{ $imageVersion }}
+=======
+        - name: inventory-api-container
+          image: docker.io/macsi21/inventory-api:v1
+          readinessProbe:
+            httpGet:
+              path: "/hc"
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+>>>>>>> parent of 93b7637... Change image version for api deployment
           ports:
             {{- range .ports }}
             - containerPort: {{ .containerPort }}
