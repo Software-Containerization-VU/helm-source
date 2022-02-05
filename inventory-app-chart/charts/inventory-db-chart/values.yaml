@@ -66,20 +66,20 @@ service:
     app: postgres-app
 
 policies:
-  ingress:
-    labels:
+  labels:
       app: postgres-app
-    podSelector:
+  podSelector:
       app: postgress-app
+  ingress:
+    enabled: true
     from:
       podSelector:
         app: inventory-api
-
+      ports:
+        - protocol: TCP
+          port: 5432
   egress:
-    labels:
-      app: postgres-app
-    podSelector:
-      app: postgres-app
+    enabled: true
     to: []
 
 imagePullSecrets: []
