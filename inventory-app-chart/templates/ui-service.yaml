@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service 
 metadata: 
   name: {{ .Release.Name }}-ui-clusterip
-  {{- with .Values.service.UI }}
+  {{- with .Values.service }}
   labels:
     {{- range $key,$value := .labels }}
     {{ $key }}: {{ $value }}

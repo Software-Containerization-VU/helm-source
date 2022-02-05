@@ -1,48 +1,65 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inventory-api-deployment
+  name: {{ .Release.Name }}-api-deployment
+  {{- with .Values.deployment }}
   labels:
-    app: inventory-api
+    {{- range $key,$value := .labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
-      app: inventory-api
+      {{- range $key,$value := .selector.matchLabels }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
   template:
     metadata:
       labels:
-        app: inventory-api
+        {{- range $key,$value := .template.labels }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
     spec:
       containers:
-        - name: inventory-api-container
-          image: docker.io/macsi21/inventory-api:v9
+        {{- $imageVersion := .imageVersion }}
+        {{- range .containers }}
+        - name: {{ .name }}
+          image: {{ .image }}:{{ $imageVersion }}
+          ports:
+            {{- range .ports }}
+            - containerPort: {{ .containerPort }}
+            {{- end }}
+          env:
+          {{- range $.Values.deployemnt.env }}
+            - name: {{ .name }}
+              {{- if .value }}
+              value: {{ .value }}
+              {{- end }}
+              {{- if .valueFrom }}
+                valueFrom:
+                  {{- if .configMapKeyRef }}
+                  configMapKeyRef:
+                    {{- range $key,$value := .configMapKeyRef }}
+                    {{ $key }}: {{ $value }}
+                    {{- end}}
+                  {{- end }}
+                  {{- if .secretKeyRef }}
+                  secretKeyRef:
+                    {{- range $key,$value := .secretKeyRef }}
+                    {{ $key }}: {{ $value }}
+                    {{- end}}
+                  {{- end }}  
+              {{- end }}
+          {{-end }}
           readinessProbe:
             httpGet:
-              path: "/hc"
-              port: 80
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
-          ports:
-            -  containerPort: 80
-          env:
-          - name: POSTGRES_HOST
-            value: postgres-clusterip.default.svc.cluster.local
-          - name: POSTGRES_PORT
-            value: "5432"
-          - name: POSTGRES_DB
-            valueFrom:
-              configMapKeyRef:
-                name: postgres-config
-                key: POSTGRES_DB
-          - name: POSTGRES_USER
-            valueFrom:
-              configMapKeyRef:
-                name: postgres-config
-                key: POSTGRES_USER
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: postgres-secret
-                key: POSTGRES_PASSWORD
-      # serviceAccount: api-service-account
-      # serviceAccountName: api-service-account
+              path: {{ $.Values.deployment.readinessProbe.healthCeck.path }}
+              port: {{ $.Values.deployment.readinessProbe.healthCeck.port }}
+            initialDelaySeconds: {{ $.Values.deployment.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ $.Values.deployment.readinessProbe.timeoutSeconds }}
+      {{- if $.Values.rbac.serviceAccount.enabled }}
+      serviceAccount: api-service-account
+      serviceAccountName: api-service-account
+      {{- end }}
+      {{- end }}
+    {{- end }}

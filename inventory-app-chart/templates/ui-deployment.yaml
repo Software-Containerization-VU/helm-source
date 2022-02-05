@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-ui-deployment
-  {{- with .Values.deployment.UI }}
+  {{- with .Values.deployment }}
   labels:
     {{- range $key,$value := .labels }}
     {{ $key }}: {{ $value }}
@@ -30,4 +30,8 @@ spec:
             - containerPort: {{ .containerPort }}
             {{- end }}
         {{- end }}
+      {{- if $.Values.rbac.serviceAccount.create }}
+      serviceAccount: {{ .rbac.serviceAccount.name }}
+      serviceAccountName: {{ .rbac.serviceAccount.name }}
+      {{- end }}
   {{- end }}

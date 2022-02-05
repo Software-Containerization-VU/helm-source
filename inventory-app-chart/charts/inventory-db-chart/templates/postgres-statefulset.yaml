@@ -23,7 +23,7 @@ metadata:
     app: postgres
 spec:
   serviceName: 'postgres-headless-service'
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: postgres-app
@@ -48,10 +48,6 @@ spec:
             - name: postgresdb
               mountPath: /var/lib/postgresql/data
               subPath: postgres
-      # volumes:
-      #   - name: postgresdb
-      #     persistentVolumeClaim:
-      #       claimName: postgres-pv-claim
   volumeClaimTemplates:
     - metadata:
         name: postgresdb

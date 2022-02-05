@@ -10,69 +10,68 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+rbac:
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ui-service-account
+  
+  clusterRole:
+    rules:
+      - apiGroups: [""]
+        resources: ["services"]
+        verbs: ["get", "list"]
+  
+  roleBinding:
+    namespace: default
+    subjects:
+      - kind: ServiceAccount
+        name: ui-service-account
+        apiGroup: ""
+    roleRef:
+      kind: ClusterRole
+      name: {{ .ReleaseName }}-get-list-services-cluster-role
+      apiGroup: rbac.authorization.k8s.io
 
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
 deployment:
-  UI:
-    imageVersion: v2
-    labels:
+  imageVersion: v2
+  labels:
+    app: inventory-ui
+
+  selector:
+    matchLabels:
       app: inventory-ui
 
-    selector:
-      matchLabels:
-        app: inventory-ui
-
-    template:
-      labels:
-        app: inventory-ui
-    containers:
-      - name: inventory-ui-container
-        image: docker.io/macsi21/inventory-ui
-        ports:
-          - containerPort: 80
+  template:
+    labels:
+      app: inventory-ui
+  containers:
+    - name: inventory-ui-container
+      image: docker.io/macsi21/inventory-ui
+      ports:
+        - containerPort: 80
 
 service:
-  UI:
-    type: ClusterIP
-    labels:
-      app: inventory-ui
-    ports: 
-    - port: 3000
-      targetPort: 80 
-    selector: 
-      app: inventory-ui
+  type: ClusterIP
+  labels:
+    app: inventory-ui
+  ports: 
+  - port: 3000
+    targetPort: 80 
+  selector: 
+    app: inventory-ui
 
-hpa:
-  UI:
-    kind: Deployment
-    minReplicas: 3
-    maxReplicas: 10
-    metric:
-      targetCPUUtilizationPercentage: 65
+autoscaling:
+  enabled: true
+  kind: Deployment
+  minReplicas: 3
+  maxReplicas: 10
+  metric:
+    targetCPUUtilizationPercentage: 65
 
 ingress:
   enabled: true
@@ -105,6 +104,24 @@ ingress:
                 port:
                   number: 8090
 
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
 resources: {}
   # We usually redevmend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -117,11 +134,7 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-autoscaling:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
+
   # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}

@@ -55,8 +55,8 @@ Create the name of the service account to use
 */}}
 {{- define "inventory-app-chart.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "inventory-app-chart.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "inventory-app-chart.fullname" .) .Values.rbac.serviceAccount.name }}
 {{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- default "default" .Values.rbac.serviceAccount.name }}
 {{- end }}
 {{- end }}
