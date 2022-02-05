@@ -30,7 +30,7 @@ spec:
             - containerPort: {{ .containerPort }}
             {{- end }}
           env:
-          {{- range $.Values.deployemnt.env }}
+          {{- range $.Values.deployment.env }}
             - name: {{ .name }}
               {{- if .value }}
               value: {{ .value }}
@@ -50,16 +50,16 @@ spec:
                     {{- end}}
                   {{- end }}  
               {{- end }}
-          {{-end }}
+          {{- end }}
           readinessProbe:
             httpGet:
-              path: {{ $.Values.deployment.readinessProbe.healthCeck.path }}
-              port: {{ $.Values.deployment.readinessProbe.healthCeck.port }}
+              path: {{ $.Values.deployment.readinessProbe.healthCheck.path }}
+              port: {{ $.Values.deployment.readinessProbe.healthCheck.port }}
             initialDelaySeconds: {{ $.Values.deployment.readinessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ $.Values.deployment.readinessProbe.timeoutSeconds }}
       {{- if $.Values.rbac.serviceAccount.enabled }}
-      serviceAccount: api-service-account
-      serviceAccountName: api-service-account
+      serviceAccount: {{ $.Values.rbac.serviceAccount.name }}
+      serviceAccountName: {{ $.Values.rbac.serviceAccount.name }}
       {{- end }}
       {{- end }}
     {{- end }}

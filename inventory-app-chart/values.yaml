@@ -33,7 +33,7 @@ rbac:
         apiGroup: ""
     roleRef:
       kind: ClusterRole
-      name: {{ .ReleaseName }}-get-list-services-cluster-role
+      name: x-get-list-services-cluster-role
       apiGroup: rbac.authorization.k8s.io
 
 

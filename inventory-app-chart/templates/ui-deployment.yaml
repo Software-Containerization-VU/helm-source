@@ -31,7 +31,7 @@ spec:
             {{- end }}
         {{- end }}
       {{- if $.Values.rbac.serviceAccount.create }}
-      serviceAccount: {{ .rbac.serviceAccount.name }}
-      serviceAccountName: {{ .rbac.serviceAccount.name }}
+      serviceAccount: {{ $.Values.rbac.serviceAccount.name }}
+      serviceAccountName: {{ $.Values.rbac.serviceAccount.name }}
       {{- end }}
   {{- end }}

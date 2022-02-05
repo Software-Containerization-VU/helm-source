@@ -16,17 +16,23 @@ rbac:
     enabled: true
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
-    name: api-service-account
+    name: ui-service-account
+  
+  clusterRole:
+    rules:
+      - apiGroups: [""]
+        resources: ["services"]
+        verbs: ["get", "list"]
   
   roleBinding:
     namespace: default
     subjects:
       - kind: ServiceAccount
-        name: api-service-account
+        name: ui-service-account
         apiGroup: ""
     roleRef:
       kind: ClusterRole
-      name: {{ .ReleaseName }}-get-list-services-cluster-role
+      name: x-get-list-services-cluster-role
       apiGroup: rbac.authorization.k8s.io
 
 
@@ -37,16 +43,17 @@ deployment:
 
   selector:
     matchLabels:
-      app: inventory-ui
+      app: inventory-api
 
   template:
     labels:
-      app: inventory-ui
+      app: inventory-api
   containers:
-    - name: inventory-ui-container
-      image: docker.io/macsi21/inventory-ui
+    - name: inventory-api-container
+      image: docker.io/macsi21/inventory-api
       ports:
         - containerPort: 80
+
   env:
     - name: POSTGRES_HOST
       value: postgres-clusterip.default.svc.cluster.local
@@ -77,12 +84,12 @@ deployment:
 service:
   type: ClusterIP
   labels:
-    app: inventory-ui
+    app: inventory-api
   ports: 
-  - port: 3000
+  - port: 8090
     targetPort: 80 
   selector: 
-    app: inventory-ui
+    app: inventory-api
 
 autoscaling:
   enabled: true
