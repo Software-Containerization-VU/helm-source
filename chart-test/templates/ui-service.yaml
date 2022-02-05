@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service 
+metadata: 
+  name: inventory-ui-clusterip
+  labels:
+    app: inventory-ui
+spec: 
+  type: ClusterIP
+  ports: 
+   - port: 3000
+     targetPort: 80 
+  selector: 
+    app: inventory-ui

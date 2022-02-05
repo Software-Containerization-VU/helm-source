@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: inventory-ingress
+  annotations:     
+    kubernetes.io/ingress.global-static-ip-name: "ingress-inventory"
+spec:
+  tls:
+    - hosts:
+      - www.lkrum.dev
+      - api.lkrum.dev
+      secretName: cloudflare-tls
+  rules:
+    - host: www.lkrum.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-ui-clusterip
+                port:
+                  number: 3000
+    - host: api.lkrum.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-api-clusterip
+                port:
+                  number: 8090

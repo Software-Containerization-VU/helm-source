@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-api-deployment
+  labels:
+    app: inventory-api
+spec:
+  selector:
+    matchLabels:
+      app: inventory-api
+  template:
+    metadata:
+      labels:
+        app: inventory-api
+    spec:
+      containers:
+        - name: inventory-api-container
+          image: docker.io/macsi21/inventory-api:v9
+          ports:
+            -  containerPort: 80
+          env:
+            - name: POSTGRES_HOST
+              value: postgres-clusterip.default.svc.cluster.local
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD            
+          readinessProbe:
+            httpGet:
+              path: "/hc"
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+      # serviceAccount: api-service-account
+      # serviceAccountName: api-service-account
