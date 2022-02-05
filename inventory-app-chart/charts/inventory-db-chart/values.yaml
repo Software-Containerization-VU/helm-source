@@ -5,10 +5,82 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: postgres:13.1-alpine
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
+
+configMap:
+  labels:
+    app: postgres-app
+  data:
+    POSTGRES_DB: inventory_pg
+    POSTGRES_USER: postgresadmin
+    POSTGRES_PORT: "30001"
+    POSTGRES_HOST: localhost
+
+secret:
+  type: Opaque
+  labels:
+    app: postgres-app
+  data:
+    POSTGRES_PASSWORD: Z3JvdXA2LWZ0dwo=
+
+statefulSet:
+  labels:
+    app: postgres-app
+  replicas: 3
+  selector:
+    matchLabels:
+      app: postgres-app
+  template:
+    labels:
+      app: inventory-ui
+  containers:
+    - name: postgres-container
+      image: postgres:13.1-alpine
+      ports:
+        - containerPort: 5432
+      volumeMounts:
+        - name: postgresdb
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+  envFrom:
+    - configMapRef: 
+        name: postgres-config
+    - secretRef:
+        name: postgres-secret
+  volumeClaims:
+    - metadata:
+        name: postgresdb
+    accessModes: ['ReadWriteMany']
+    storageSize: 5Gi
+
+service:
+  type: ClusterIP
+  labels:
+    app: postgres-app
+  ports: 
+  - port: 5432
+  selector: 
+    app: postgres-app
+
+policies:
+  ingress:
+    labels:
+      app: postgres-app
+    podSelector:
+      app: postgress-app
+    from:
+      podSelector:
+        app: inventory-api
+
+  egress:
+    labels:
+      app: postgres-app
+    podSelector:
+      app: postgres-app
+    to: []
 
 imagePullSecrets: []
 nameOverride: ""

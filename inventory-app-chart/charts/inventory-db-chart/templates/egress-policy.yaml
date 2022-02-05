@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-db-egress-policy
+  {{- with .Values.policies.ingress }}
+  labels:
+    {{- range $key,$value := .labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- range $key,$value := .podSelector}}
+      {{ $key }}: {{ $value }}
+      {{- end }}
+  policyTypes:
+  - Egress
+  egress: {{ .to }}
+  {{- end }}

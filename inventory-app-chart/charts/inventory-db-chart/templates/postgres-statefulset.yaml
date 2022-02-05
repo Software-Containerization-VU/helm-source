@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-headless-service
+  name: {{ .Release.Name }}-postgres-headless-service
   labels:
     app: postgres
 spec:
@@ -11,48 +11,74 @@ spec:
       name: postgres
   clusterIP: None
   selector:
-    app: postgres-app
+    {{- range $key,$value := .Values.statefulSet.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
 
 ---
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-statefulset-test
+  name: {{ .Release.Name }}-postgres-statefulset
+  {{- with .Values.statefulSet }}
   labels:
-    app: postgres
+    {{- range $key,$value := .labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
 spec:
-  serviceName: 'postgres-headless-service'
-  replicas: 3
+  serviceName: {{ .Release.Name }}-postgres-headless-service
+  replicas: {{ .replicas }}
   selector:
     matchLabels:
-      app: postgres-app
+      {{- range $key,$value := .selector.matchLabels }}
+      {{ $key }}: {{ $value }}
+      {{- end }}
   template:
     metadata:
       labels:
-        app: postgres-app
+        {{- range $key,$value := .template.labels }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
     spec:
       containers:
-        - name: postgres-container
-          image: postgres:13.1-alpine
-          imagePullPolicy: 'IfNotPresent'
+        {{- range .containers }}
+        - name: {{ .name }}
+          image: {{ .image }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           ports:
-            - containerPort: 5432 # Default PostgreSQL port
-              name: postgres
+            {{- range .ports }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+            {{- end }}
           envFrom: # Defines all ConfigMap's and Secret's data as container environment variables
+            {{- range $.Values.statefulSet.envFrom}}
+            {{- if .configMapRef }}
             - configMapRef: 
-                name: postgres-config
-            - secretRef:
-                name: postgres-secret
+                name: {{ .configMapRef.name }}
+            {{- end }}
+            {{- if .secretRef }}
+            - secretRef: 
+                name: {{ .secretRef.name }}
+            {{- end }}
+            {{- end }}
           volumeMounts:
-            - name: postgresdb
-              mountPath: /var/lib/postgresql/data
-              subPath: postgres
+            {{- range .volumeMounts}}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              subPath: {{ .subPath }}
+            {{- end }}
+        {{- end }}
   volumeClaimTemplates:
+    {{- range .volumeClaims }}
     - metadata:
-        name: postgresdb
+        {{- range $key,$value := .metadata }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
       spec:
-        accessModes: ['ReadWriteOnce']
+        accessModes: {{ .accessModes }}
         resources:
           requests:
-            storage: 5Gi
+            storage: {{ .storageSize }}
+    {{- end }}
+  {{- end }}

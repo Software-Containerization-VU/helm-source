@@ -10,7 +10,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-
 rbac:
   serviceAccount:
     # Specifies whether a service account should be created
@@ -18,13 +17,11 @@ rbac:
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name: ui-service-account
-  
   clusterRole:
     rules:
       - apiGroups: [""]
         resources: ["services"]
         verbs: ["get", "list"]
-  
   roleBinding:
     namespace: default
     subjects:
@@ -41,11 +38,9 @@ deployment:
   imageVersion: v2
   labels:
     app: inventory-ui
-
   selector:
     matchLabels:
       app: inventory-ui
-
   template:
     labels:
       app: inventory-ui

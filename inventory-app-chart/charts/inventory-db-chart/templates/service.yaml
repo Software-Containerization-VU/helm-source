@@ -1,7 +1,7 @@
 apiVersion: v1
-kind: Service 
-metadata: 
-  name: {{ .Release.Name }}-ui-clusterip
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgres-clusterip
   {{- with .Values.service }}
   labels:
     {{- range $key,$value := .labels }}
@@ -11,8 +11,7 @@ spec:
   type: {{ .type }}
   ports:
     {{- range .ports }}
-    - port: {{ .port }}
-      targetPort: {{ .targetPort }} 
+    - port: {{ .port }} # This also sets 'targetPort' to {{ .port }}
     {{- end }}
   selector:
     {{- range $key,$value := .selector }}
