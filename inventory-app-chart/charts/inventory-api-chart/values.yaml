@@ -34,24 +34,22 @@ deployment:
       ports:
         - containerPort: 80
   env:
-    - name: POSTGRES_HOST
-      value: postgres-clusterip.default.svc.cluster.local
     - name: POSTGRES_PORT
       value: "5432"
     - name: POSTGRES_DB
       valueFrom:
         configMapKeyRef:
-          name: test-postgres-config
+          name: postgres-config
           key: POSTGRES_DB
     - name: POSTGRES_USER
       valueFrom:
         configMapKeyRef:
-          name: test-postgres-config
+          name: postgres-config
           key: POSTGRES_USER
     - name: POSTGRES_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: test-postgres-secret
+          name: postgres-secret
           key: POSTGRES_PASSWORD
   readinessProbe:
     healthCheck:
