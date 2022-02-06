@@ -30,11 +30,10 @@ spec:
             - containerPort: {{ .containerPort }}
             {{- end }}
           env:
+            - name: POSTGRES_HOST
+              value: {{ $.Release.Name }}-postgres-clusterip.default.svc.cluster.local
             {{- range $.Values.deployment.env }}
             - name: {{ .name }}
-              {{- if eq .value postgres-clusterip.default.svc.cluster.local }}
-              value: {{ $.Release.Name }}-{{ .value }}
-              {{- end }}
               {{- if .value }}
               {{- if eq .value "5432"}}
               value: {{ .value | toYaml }}
