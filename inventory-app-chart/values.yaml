@@ -41,9 +41,11 @@ deployment:
   selector:
     matchLabels:
       app: inventory-ui
+      version: "v1.0.0"
   template:
     labels:
       app: inventory-ui
+      version: "v1.0.0"
   containers:
     - name: inventory-ui-container
       image: docker.io/macsi21/inventory-ui
