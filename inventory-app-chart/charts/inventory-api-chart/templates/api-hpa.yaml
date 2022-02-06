@@ -15,4 +15,4 @@ spec:
   {{ $key }}: {{ $value }}
   {{- end }}
   {{- end }}
-{{- end }}
+  {{- end }}
