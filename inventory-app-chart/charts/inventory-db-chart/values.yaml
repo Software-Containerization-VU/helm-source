@@ -27,7 +27,7 @@ secret:
 statefulSet:
   labels:
     app: postgres-app
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: postgres-app
