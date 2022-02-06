@@ -19,7 +19,7 @@ rbac:
     name: service-inspector-service-account
 
 deployment:
-  imageVersion: v2
+  imageVersion: v9
   labels:
     app: inventory-api
   selector:
@@ -37,21 +37,21 @@ deployment:
     - name: POSTGRES_HOST
       value: postgres-clusterip.default.svc.cluster.local
     - name: POSTGRES_PORT
-      value: 5432
+      value: "5432"
     - name: POSTGRES_DB
       valueFrom:
         configMapKeyRef:
-          name: postgres-config
+          name: test-postgres-config
           key: POSTGRES_DB
     - name: POSTGRES_USER
       valueFrom:
         configMapKeyRef:
-          name: postgres-config
+          name: test-postgres-config
           key: POSTGRES_USER
     - name: POSTGRES_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: postgres-secret
+          name: test-postgres-secret
           key: POSTGRES_PASSWORD
   readinessProbe:
     healthCheck:
