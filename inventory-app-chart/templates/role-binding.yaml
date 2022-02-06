@@ -8,7 +8,7 @@ metadata:
 subjects:
   {{- range .subjects }}
   - kind: {{ .kind }}
-    name: {{ $.Release.Name }}-{{ .name }}
+    name: {{ .name }}
     apiGroup: {{ .apiGroup }}
   {{- end }}
 roleRef:
