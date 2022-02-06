@@ -1,41 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Release.Name}}-db-network-policy
-{{- with .Values.policies }}
-  labels:
-    {{- range $key,$value := .labels }}
-    {{ $key }}: {{ $value }}
-    {{- end }}
+  name: db-network-policy
 spec:
   podSelector:
     matchLabels:
-      {{- range $key,$value := .podSelector }}
-      {{ $key }}: {{ $value }}
-      {{- end }}
+      app: postgres-app
   policyTypes:
-    {{- if .ingress.enabled }}
-    - Ingress
-    {{- end }}
-    {{- if .egress.enabled }}
-    - Egress
-    {{- end }}
-  {{- if .ingress.enabled }}
+  - Ingress
+  - Egress
   ingress:
-    - from:
-      - podSelector:
-          matchLabels:
-            {{- range  $key,$value := .ingress.from.podSelector }}
-            {{ $key }}: {{ $value }}
-            {{- end }}
-      ports:
-        {{- range .ingress.from.ports }}
-        - protocol: {{ .protocol }}
-          port: {{ .port }}
-        {{- end }}
-  {{- end}}
-  {{- if .egress.enabled }}
-  egress: {{ .egress.to }}
-  {{- end }}
-
-{{- end }}
+  - from:
+    - podSelector:
+        matchLabels:
+          app: inventory-api
+    ports:
+    - protocol: TCP
+      port: 5432
+  egress: []
