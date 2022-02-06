@@ -35,7 +35,7 @@ deployment:
         - containerPort: 80
   env:
     - name: POSTGRES_HOST
-      value: "postgres-clusterip.default.svc.cluster.local"
+      value: postgres-clusterip.default.svc.cluster.local
     - name: POSTGRES_PORT
       value: "5432"
     - name: POSTGRES_DB

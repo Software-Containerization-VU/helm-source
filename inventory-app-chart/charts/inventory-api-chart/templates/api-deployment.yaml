@@ -32,7 +32,7 @@ spec:
           env:
             {{- range $.Values.deployment.env }}
             - name: {{ .name }}
-              {{- if eq .value "postgres-clusterip.default.svc.cluster.local" }}
+              {{- if eq .value postgres-clusterip.default.svc.cluster.local }}
               value: {{ $.Release.Name }}-{{ .value }}
               {{- end }}
               {{- if .value }}
