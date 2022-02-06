@@ -19,7 +19,7 @@ rbac:
     name: service-inspector-service-account
 
 deployment:
-  imageVersion: v9
+  imageVersion: v50
   labels:
     app: inventory-api
   selector:
