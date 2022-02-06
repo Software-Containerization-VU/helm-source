@@ -8,13 +8,13 @@ metadata:
 subjects:
   {{- range .subjects }}
   - kind: {{ .kind }}
-    name: {{ .name }}
+    name: {{ $.Release.Name }}-{{ .name }}
     apiGroup: {{ .apiGroup }}
   {{- end }}
 roleRef:
   {{- range $key,$value := .roleRef }}
   {{- if eq $key "name" }}
-  {{ $key }}: {{ $.Release.Name }}-{{ $value }}
+  {{ $key }}: {{ $value }}
   {{- else }}
   {{ $key }}: {{ $value }}
   {{- end }}
