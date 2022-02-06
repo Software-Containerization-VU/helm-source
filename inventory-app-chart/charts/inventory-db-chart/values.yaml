@@ -52,7 +52,7 @@ statefulSet:
   volumeClaims:
     - metadata:
         name: postgresdb
-      accessModes: ['ReadWriteMany']
+      accessModes: ['ReadWriteOnce']
       storageSize: 5Gi
 
 service:
