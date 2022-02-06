@@ -5,6 +5,6 @@ metadata:
 rules:
   {{- range .Values.rbac.clusterRole.rules }}
   - apiGroups: {{ .apiGroups }}
-    resources: {{ .services }}
+    resources: {{ .resources }}
     verbs: {{ .verbs }}
   {{- end }}

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-api-deployment
-  {{- with .Values.deployment }}
+{{- with .Values.deployment }}
   labels:
     {{- range $key,$value := .labels }}
     {{ $key }}: {{ $value }}
@@ -24,7 +24,7 @@ spec:
         {{- $imageVersion := .imageVersion }}
         {{- range .containers }}
         - name: {{ .name }}
-          image: {{ .image }}: {{ $imageVersion }}
+          image: {{ .image }}:{{ $imageVersion }}
           ports:
             {{- range .ports }}
             - containerPort: {{ .containerPort }}
@@ -33,32 +33,45 @@ spec:
             {{- range $.Values.deployment.env }}
             - name: {{ .name }}
               {{- if .value }}
-              value: {{ .value }}
-              {{- end }}
+              {{- if eq .value "5432"}}
+              value: {{ .value | toYaml }}
+              {{- end }} # end if value="5432"
+              {{- end }} # end if value
               {{- if .valueFrom }}
-                valueFrom:
-                  {{- if .configMapKeyRef }}
-                  configMapKeyRef:
-                    {{- range $key,$value := .configMapKeyRef }}
-                    {{ $key }}: {{ $value }}
-                    {{- end}}
-                  {{- end }}
-                  {{- if .secretKeyRef }}
-                  secretKeyRef:
-                    {{- range $key,$value := .secretKeyRef }}
-                    {{ $key }}: {{ $value }}
-                    {{- end}}
-                  {{- end }}  
-              {{- end }}
+              valueFrom:
+                {{- if .valueFrom.configMapKeyRef }}
+                configMapKeyRef:
+                  {{- range $key,$value := .valueFrom.configMapKeyRef }}
+                  {{- if eq $key "name"}}
+                  {{ $key }}: {{ $.Release.Name }}-{{ $value }}
+                  {{- else }}
+                  {{ $key }}: {{ $value }}
+                  {{- end }} # end $key=name if                  
+                  {{- end}} # end configMapRef range
+                {{- end }} # end configMapKeyRef if
+                {{- if .valueFrom.secretKeyRef }}
+                secretKeyRef:
+                  {{- range $key,$value := .valueFrom.secretKeyRef }}
+                  {{- if eq $key "name"}}
+                  {{ $key }}: {{ $.Release.Name }}-{{ $value }}
+                  {{- else }}
+                  {{ $key }}: {{ $value }}
+                  {{- end }} # end $key=name if 
+                  {{- end}} # end secretKeyRef range
+                {{- end }} # end secretKeyRef if
+              {{- end }} # end valueFrom if
+            {{- end }} # end env range
           readinessProbe:
             httpGet:
               path: {{ $.Values.deployment.readinessProbe.healthCheck.path }}
               port: {{ $.Values.deployment.readinessProbe.healthCheck.port }}
             initialDelaySeconds: {{ $.Values.deployment.readinessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ $.Values.deployment.readinessProbe.timeoutSeconds }}
-        {{- end }}
+      {{- end }} # end containers range
       {{- if $.Values.rbac.serviceAccount.enabled }}
-      serviceAccount: {{ $.Values.rbac.serviceAccount.name }}
-      serviceAccountName: {{ $.Values.rbac.serviceAccount.name }}
-      {{- end }}
-    {{- end }}
+      {{- range .serviceAccounts }}
+      serviceAccount: {{ $.Release.Name }}-{{ .name }}
+      serviceAccountName: {{ $.Release.Name }}-{{ .name }}
+      {{- end }} # end range serviceAccounts
+      {{- end }} # end serviceAccount.enabled if
+{{- end}}

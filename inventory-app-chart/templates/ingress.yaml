@@ -9,6 +9,7 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+  {{- if $.Values.tlsSecret.create }}
   tls:
     {{- range .tls }}
     - hosts:
@@ -17,6 +18,7 @@ spec:
       {{- end }}
       secretName: {{ .secretName }}
     {{- end }}
+  {{- end }}
   rules:
     {{- range .rules }}
     - host: {{ .host }}
@@ -27,7 +29,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ .backend.service.name }}
+                name: {{ $.Release.Name }}-{{ .backend.service.name }}
                 port:
                   number: {{ .backend.service.port.number }}
           {{- end }}

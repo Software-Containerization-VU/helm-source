@@ -27,7 +27,7 @@ metadata:
     {{ $key }}: {{ $value }}
     {{- end }}
 spec:
-  serviceName: {{ .Release.Name }}-postgres-headless-service
+  serviceName: {{ $.Release.Name }}-postgres-headless-service
   replicas: {{ .replicas }}
   selector:
     matchLabels:
@@ -52,18 +52,18 @@ spec:
               containerPort: {{ .containerPort }}
             {{- end }}
           envFrom: # Defines all ConfigMap's and Secret's data as container environment variables
-            {{- range $.Values.statefulSet.envFrom}}
+            {{- range $.Values.statefulSet.envFrom }}
             {{- if .configMapRef }}
             - configMapRef: 
-                name: {{ .configMapRef.name }}
+                name: {{ $.Release.Name }}-{{ .configMapRef.name }}
             {{- end }}
             {{- if .secretRef }}
             - secretRef: 
-                name: {{ .secretRef.name }}
+                name: {{ $.Release.Name }}-{{ .secretRef.name }}
             {{- end }}
             {{- end }}
           volumeMounts:
-            {{- range .volumeMounts}}
+            {{- range .volumeMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
               subPath: {{ .subPath }}

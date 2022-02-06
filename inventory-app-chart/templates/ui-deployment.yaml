@@ -31,7 +31,9 @@ spec:
             {{- end }}
         {{- end }}
       {{- if $.Values.rbac.serviceAccount.create }}
-      serviceAccount: {{ $.Values.rbac.serviceAccount.name }}
-      serviceAccountName: {{ $.Values.rbac.serviceAccount.name }}
+      {{- range .serviceAccounts }}
+      serviceAccount: {{ $.Release.Name }}-{{ .name }}
+      serviceAccountName: {{ $.Release.Name }}-{{ .name }}
+      {{- end }}
       {{- end }}
   {{- end }}
